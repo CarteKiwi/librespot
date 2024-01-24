@@ -229,6 +229,7 @@ fn get_setup() -> Setup {
     #[cfg(feature = "passthrough-decoder")]
     const PASSTHROUGH: &str = "passthrough";
     const PASSWORD: &str = "password";
+    const TOKEN: &str = "token";
     const PROXY: &str = "proxy";
     const QUIET: &str = "quiet";
     const SYSTEM_CACHE: &str = "system-cache";
@@ -268,6 +269,7 @@ fn get_setup() -> Setup {
     #[cfg(feature = "passthrough-decoder")]
     const PASSTHROUGH_SHORT: &str = "P";
     const PASSWORD_SHORT: &str = "p";
+    const TOKEN_SHORT: &str = "k";
     const EMIT_SINK_EVENTS_SHORT: &str = "Q";
     const QUIET_SHORT: &str = "q";
     const INITIAL_VOLUME_SHORT: &str = "R";
@@ -451,6 +453,12 @@ fn get_setup() -> Setup {
         PASSWORD,
         "Password used to sign in with.",
         "PASSWORD",
+    )
+    .optopt(
+        TOKEN_SHORT,
+        TOKEN,
+        "token used to sign in with.",
+        "TOKEN",
     )
     .optopt(
         ONEVENT_SHORT,
@@ -1088,6 +1096,11 @@ fn get_setup() -> Setup {
                     empty_string_error_msg(PASSWORD, PASSWORD_SHORT);
                 }
                 Some(Credentials::with_password(username, password))
+            } else if let Some(token) = opt_str(TOKEN) {
+                    if token.is_empty() {
+                        empty_string_error_msg(TOKEN, TOKEN_SHORT);
+                    }
+                    Some(Credentials::with_token(username, token))
             } else {
                 match cached_creds {
                     Some(creds) if username == creds.username => Some(creds),
